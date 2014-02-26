@@ -23,7 +23,7 @@ class RepomorphScript(scriptSource: Source) {
   import io.github.vigoo.repomorph.api.ScriptAPI._
 
   class UserScript extends Script {
-    override def apply(context: MorphContext): Unit = {
+    override def apply(implicit context: MorphContext): Unit = {
       ${scriptSource.getLines().mkString("\n")}
     }
   }

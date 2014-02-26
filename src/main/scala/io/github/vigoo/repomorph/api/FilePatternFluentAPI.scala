@@ -8,6 +8,6 @@ import io.github.vigoo.repomorph.FileByName
 object FilePatternFluentAPI {
   def apply(name: String): FilePattern = SingleFile(name)
   def called(name: String): FilePattern = FileByName(name)
-  def in(directoryName: String): FilesInDirectory = FilesInDirectory(directoryName, Set())
+  def in(directoryName: String): FilesInDirectory = FilesInDirectory(directoryName, f => true)
   def withExtension(extension: String): FilePattern = FilesWithExtension(extension)
 }

@@ -10,4 +10,6 @@ libraryDependencies += "com.github.scopt" %% "scopt" % "3.2.0"
 
 libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.3"
 
+libraryDependencies += "commons-io" % "commons-io" % "2.4"
+
 resolvers += Resolver.sonatypeRepo("public")
