@@ -41,6 +41,6 @@ class RepomorphScript(scriptSource: Source) {
 
   def run(context: MorphContext) {
     val instance = generatedClass.newInstance()
-    instance(new FileSystemMorphContext())
+    instance(context)
   }
 }
