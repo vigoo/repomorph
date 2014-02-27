@@ -12,7 +12,7 @@ object ScriptAPI {
     }
   }
 
-  def move(singleSource: String)(implicit context: MorphContext): MoveFluentAPI = new MoveFluentAPI(SingleFile(singleSource))
+  def move = MoveFluentAPI
 
   def delete(pattern: FilePattern)(implicit context: MorphContext): Unit = {
     for (file <- context.getFiles(pattern)) {
