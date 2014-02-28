@@ -14,10 +14,18 @@ object MoveFluentAPI {
 
 class MoveFluentAPI(source: FilePattern)(implicit val context: MorphContext) {
 
+  def moveFiles(source: FilePattern, targetPath: String): Unit = {
+    val targetDir = new File(targetPath)
+
+    for (file <- context.getFiles(source)) {
+      context.move(file, new File(targetDir, file.getName))
+    }
+  }
+
   def to(target: String): Unit = {
     source match {
       case SingleFile(sourcePath) => context.move(new File(sourcePath), new File(target))
-      case _ => ???
+      case other => moveFiles(other, target)
     }
   }
 }

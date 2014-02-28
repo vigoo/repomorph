@@ -2,12 +2,13 @@ package io.github.vigoo.repomorph.contexts
 
 import resource._
 import io.github.vigoo.repomorph._
-import java.io.{FileWriter, File}
+import java.io.{FileInputStream, BufferedInputStream, FileWriter, File}
 import org.apache.commons.io.FileUtils
 import scala.io.Source
 import io.github.vigoo.repomorph.FilesWithExtension
 import io.github.vigoo.repomorph.SingleFile
 import io.github.vigoo.repomorph.SingleDirectory
+import java.util.UUID
 
 class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
   override def overwrite(file: File, newContents: String): Unit = {
@@ -17,8 +18,23 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
     }
   }
 
+  def isUTF16(file: File): Boolean = {
+    val stream = new FileInputStream(file)
+    try {
+      val bom = new Array[Byte](2)
+      stream.read(bom, 0, 2)
+      bom(0) == -1 && bom(1) == -2
+    }
+    finally {
+      stream.close()
+    }
+  }
+
   override def read(file: File): Source =
-    Source.fromFile(file)
+    if (isUTF16(file))
+      Source.fromFile(file, "UTF-16")
+    else
+      Source.fromFile(file, "UTF-8")
 
   override def getFiles(pattern: FilePattern): Iterable[File] =
     pattern match {
@@ -36,10 +52,20 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
 
     println(s"Moving ${absSource} to ${absTarget}")
 
-    if (absSource.isDirectory)
-      FileUtils.moveDirectory(absSource, absTarget)
-    else
+    if (absSource.isDirectory) {
+
+      if (absTarget.getCanonicalPath.startsWith(absSource.getCanonicalPath))
+      {
+        val tempDir = new File(FileUtils.getTempDirectory, UUID.randomUUID().toString)
+        FileUtils.moveDirectory(absSource, tempDir)
+        FileUtils.moveDirectory(tempDir, absTarget)
+      } else {
+        FileUtils.moveDirectory(absSource, absTarget)
+      }
+    }
+    else {
       absSource.renameTo(absTarget)
+    }
   }
 
   override def delete(file: File): Unit = {
