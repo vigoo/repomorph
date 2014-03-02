@@ -1,7 +1,7 @@
 package io.github.vigoo.repomorph.api
 
 import java.io.File
-import io.github.vigoo.repomorph.{SingleFile, FilePattern}
+import io.github.vigoo.repomorph.{SingleDirectory, FilePattern}
 import io.github.vigoo.repomorph.actions.{FileAction, RemoveLinesAction}
 import io.github.vigoo.repomorph.contexts.MorphContext
 
@@ -15,8 +15,12 @@ object ScriptAPI {
   def move = MoveFluentAPI
 
   def delete(pattern: FilePattern)(implicit context: MorphContext): Unit = {
-    for (file <- context.getFiles(pattern)) {
-      context.delete(file)
+
+    pattern match {
+      case SingleDirectory(dir) => context.delete(dir)
+      case _ => for (file <- context.getFiles(pattern)) {
+        context.delete(file)
+      }
     }
   }
 

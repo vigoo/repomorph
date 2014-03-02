@@ -10,4 +10,5 @@ trait MorphContext {
   def overwrite(file: File, newContents: String): Unit
   def move(source: File, target: File): Unit
   def delete(file: File): Unit
+  def delete(path: String): Unit
 }

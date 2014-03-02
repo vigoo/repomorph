@@ -25,4 +25,8 @@ object TestMorphContext extends MorphContext {
   override def delete(file: File): Unit = {
     println(s"Deleting ${file.getAbsolutePath}")
   }
+
+  override def delete(path: String): Unit = {
+    println(s"Deleting ${path}")
+  }
 }

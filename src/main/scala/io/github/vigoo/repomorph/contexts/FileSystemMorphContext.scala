@@ -2,7 +2,7 @@ package io.github.vigoo.repomorph.contexts
 
 import resource._
 import io.github.vigoo.repomorph._
-import java.io.{FileInputStream, BufferedInputStream, FileWriter, File}
+import java.io.{FileInputStream, FileWriter, File}
 import org.apache.commons.io.FileUtils
 import scala.io.Source
 import io.github.vigoo.repomorph.FilesWithExtension
@@ -12,7 +12,7 @@ import java.util.UUID
 
 class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
   override def overwrite(file: File, newContents: String): Unit = {
-    println(s"Overwriting ${file}")
+    println(s"Overwriting $file")
     for (writer <- managed(new FileWriter(file))) {
       writer.write(newContents)
     }
@@ -50,7 +50,7 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
     val absSource = new File(rootPath, source.getPath)
     val absTarget = new File(rootPath, target.getPath)
 
-    println(s"Moving ${absSource} to ${absTarget}")
+    println(s"Moving $absSource to $absTarget")
 
     if (absSource.isDirectory) {
 
@@ -64,13 +64,26 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
       }
     }
     else {
+      val dir = absTarget.getParentFile
+      dir.mkdirs()
       absSource.renameTo(absTarget)
     }
   }
 
   override def delete(file: File): Unit = {
-    println(s"Deleting ${file}")
+    println(s"Deleting $file")
     file.delete()
+  }
+
+  override def delete(path: String): Unit = {
+    val absPath = new File(rootPath, path)
+    println(s"Deleting $absPath")
+
+    if (absPath.isDirectory) {
+      FileUtils.deleteDirectory(absPath)
+    } else {
+      absPath.delete()
+    }
   }
 
   private def allFiles(root: File): Iterable[File] = {
