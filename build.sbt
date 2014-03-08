@@ -14,4 +14,6 @@ libraryDependencies += "commons-io" % "commons-io" % "2.4"
 
 libraryDependencies += "com.aragost.javahg" % "javahg" % "0.4"
 
+libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test"
+
 resolvers += Resolver.sonatypeRepo("public")
