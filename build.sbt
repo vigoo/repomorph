@@ -12,4 +12,6 @@ libraryDependencies += "com.jsuereth" %% "scala-arm" % "1.3"
 
 libraryDependencies += "commons-io" % "commons-io" % "2.4"
 
+libraryDependencies += "com.aragost.javahg" % "javahg" % "0.4"
+
 resolvers += Resolver.sonatypeRepo("public")

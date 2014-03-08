@@ -3,11 +3,20 @@ package io.github.vigoo.repomorph
 import java.io.File
 import scala.io.Source
 import scopt.OptionParser
-import io.github.vigoo.repomorph.contexts.FileSystemMorphContext
+import io.github.vigoo.repomorph.contexts.{MercurialMorphContext, MorphContext, FileSystemMorphContext}
 
 case class RepomorphConfig(script: File = new File("script.morph"), root: File = new File("."))
 
 object Main {
+
+  private def createContext(root: File): MorphContext = {
+    val hgdir = new File(root, ".hg")
+    if (hgdir.exists() && hgdir.isDirectory) {
+      new MercurialMorphContext(root)
+    } else {
+      new FileSystemMorphContext(root)
+    }
+  }
 
   def main(args: Array[String]) {
     val parser = new OptionParser[RepomorphConfig]("repomorph") {
@@ -19,7 +28,7 @@ object Main {
 
     parser.parse(args, RepomorphConfig()) map { config =>
       val script = new RepomorphScript(Source.fromFile(config.script))
-      script.run(new FileSystemMorphContext(config.root))
+      script.run(createContext(config.root))
     }
   }
 }
