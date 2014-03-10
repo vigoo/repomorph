@@ -18,20 +18,34 @@ class MercurialMorphContext(private val rootPath: File) extends FileSystemMorphC
   }
 
   override def delete(file: File): Unit = {
-    val command = new RemoveCommand(repository).force()
-    command.execute(file)
 
-    if (!command.isSuccessful) {
-      println(s"Delete returned with ${command.getReturnCode}; error message: ${command.getErrorString}")
+    try {
+      val command = new RemoveCommand(repository).force()
+      command.execute(file)
+
+      if (!command.isSuccessful) {
+        println(s"Delete returned with ${command.getReturnCode}; error message: ${command.getErrorString}")
+      }
+    }
+    catch {
+      case e: Throwable => println(s"Delete failed: $e")
     }
   }
 
   override def move(source: File, target: File): Unit = {
-    val command = new RenameCommand(repository).force()
-    command.execute(source, target)
+    val absSource = new File(rootPath, source.getPath)
+    val absTarget = new File(rootPath, target.getPath)
 
-    if (command.getReturnCode != 0) {
-      println(s"Rename returned with ${command.getReturnCode}; error message: ${command.getErrorString}")
+    try {
+      val command = new RenameCommand(repository).force()
+      command.execute(absSource, absTarget)
+
+      if (command.getReturnCode != 0) {
+        println(s"Rename returned with ${command.getReturnCode}; error message: ${command.getErrorString}")
+      }
+    }
+    catch {
+      case e: Throwable => println(s"Rename failed: $e")
     }
   }
 }
