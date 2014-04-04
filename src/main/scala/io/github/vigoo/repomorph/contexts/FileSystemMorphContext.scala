@@ -10,7 +10,7 @@ import io.github.vigoo.repomorph.SingleFile
 import io.github.vigoo.repomorph.SingleDirectory
 import java.util.UUID
 
-class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
+class FileSystemMorphContext(private val rootPath: File) extends MorphContext with ProjectFileSupport {
   override def overwrite(file: File, newContents: String): Unit = {
     println(s"Overwriting $file")
     for (writer <- managed(new FileWriter(file))) {
@@ -43,6 +43,7 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
       case FilesWithExtension(extension) => for (file <- allFiles() if file.getName endsWith extension) yield file
       case FilesInDirectory(path, filter) => for (file <- safe(new File(rootPath, path).listFiles) if file.isFile && filter(file.getName)) yield file
       case FileByName(name) => for (file <- allFiles() if file.getName == name) yield file
+      case FilesInProject(projectPath, inverted) => filesInProject(new File(rootPath, projectPath), inverted)
     }
 
   override def move(source: File, target: File): Unit = {
@@ -64,9 +65,13 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
       }
     }
     else {
-      val dir = absTarget.getParentFile
-      dir.mkdirs()
-      absSource.renameTo(absTarget)
+      if (absTarget.exists && absTarget.isDirectory) {
+        absSource.renameTo(new File(absTarget, absSource.getName))
+      } else {
+        val dir = absTarget.getParentFile
+        dir.mkdirs()
+        absSource.renameTo(absTarget)
+      }
     }
   }
 
@@ -86,7 +91,7 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
     }
   }
 
-  private def allFiles(root: File): Iterable[File] = {
+  override def allFiles(root: File): Iterable[File] = {
     safe(root.listFiles).filter(_.isFile) ++ safe(root.listFiles).filter(_.isDirectory).flatMap(allFiles)
   }
 

@@ -11,4 +11,5 @@ trait MorphContext {
   def move(source: File, target: File): Unit
   def delete(file: File): Unit
   def delete(path: String): Unit
+  def allFiles(root: File): Iterable[File];
 }

@@ -15,4 +15,6 @@ class FilePatternFluentAPI[TGeneric, TFilesInDir](
   def called(name: String): TGeneric = genericTr(FileByName(name))
   def in(directoryName: String): TFilesInDir = filesInDirTr(FilesInDirectory(directoryName, f => true))
   def withExtension(extension: String): TGeneric = genericTr(FilesWithExtension(extension))
+
+  def not(prj: FilesInProject): FilePattern = FilesInProject(prj.projectPath, !prj.inverted)
 }

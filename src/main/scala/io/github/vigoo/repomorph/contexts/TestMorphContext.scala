@@ -29,4 +29,8 @@ object TestMorphContext extends MorphContext {
   override def delete(path: String): Unit = {
     println(s"Deleting ${path}")
   }
+
+  override def allFiles(root: File): Iterable[File] = {
+    List[File]()
+  }
 }
