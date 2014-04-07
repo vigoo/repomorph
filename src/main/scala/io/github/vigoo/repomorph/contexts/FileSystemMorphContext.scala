@@ -48,9 +48,9 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext wi
 
   override def move(source: File, target: File): Unit = {
 
-    val absSource = new File(rootPath, source.getPath)
-    val absTarget = new File(rootPath, target.getPath)
-
+    val absSource = if (source.isAbsolute) source else new File(rootPath, source.getPath)
+    val absTarget = if (target.isAbsolute) target else new File(rootPath, target.getPath)
+    
     println(s"Moving $absSource to $absTarget")
 
     if (absSource.isDirectory) {
