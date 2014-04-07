@@ -47,8 +47,8 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
 
   override def move(source: File, target: File): Unit = {
 
-    val absSource = new File(rootPath, source.getPath)
-    val absTarget = new File(rootPath, target.getPath)
+    val absSource = if (source.isAbsolute) source else new File(rootPath, source.getPath)
+    val absTarget = if (target.isAbsolute) target else new File(rootPath, target.getPath)
 
     println(s"Moving $absSource to $absTarget")
 
@@ -64,9 +64,18 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext {
       }
     }
     else {
-      val dir = absTarget.getParentFile
-      dir.mkdirs()
-      absSource.renameTo(absTarget)
+      if (absTarget.exists() && absTarget.isDirectory) {
+        val targetFile = new File(absTarget, absSource.getName)
+        if (!absSource.renameTo(targetFile)) {
+          println(s"Failed to move $absSource to $targetFile")
+        }
+      } else {
+        val dir = absTarget.getParentFile
+        dir.mkdirs()
+        if (!absSource.renameTo(absTarget)) {
+          println(s"Failed to move $absSource to $absTarget")
+        }
+      }
     }
   }
 
