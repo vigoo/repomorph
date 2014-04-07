@@ -50,7 +50,7 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext wi
 
     val absSource = if (source.isAbsolute) source else new File(rootPath, source.getPath)
     val absTarget = if (target.isAbsolute) target else new File(rootPath, target.getPath)
-    
+
     println(s"Moving $absSource to $absTarget")
 
     if (absSource.isDirectory) {

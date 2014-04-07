@@ -2,7 +2,6 @@ package io.github.vigoo.repomorph.contexts
 
 import java.io.File
 import resource._
-import io.github.vigoo.repomorph.FilesInDirectory
 
 trait VisualStudioProjectSupport {
 
@@ -29,7 +28,7 @@ trait VisualStudioProjectSupport {
 
   def filesInVisualCSharpProject(projectPath: File, inverted: Boolean): Set[File] = {
 
-    val pattern = "\\<Compile\\sInclude=\\\"([^\"]+)\\\"\\s\\/\\>".r
+    val pattern = "\\<(Compile|Page)\\sInclude=\\\"([^\"]+)\\\"\\s\\/\\>".r
 
     managed(self.read(projectPath)) acquireAndGet {
       source =>
@@ -40,14 +39,15 @@ trait VisualStudioProjectSupport {
           .toSet
 
         if (inverted) {
-          getFilesWithExtension(projectPath.getParentFile, ".cs").filter(f => !sourceFiles.contains(f))
+          getFilesWithExtension(projectPath.getParentFile, Set(".cs", ".xaml")).filter(f => !sourceFiles.contains(f))
         } else {
           sourceFiles
         }
     }
   }
 
-  private def getFilesWithExtension(root: File, extension: String): Set[File] = {
-      allFiles(root).filter(f => f.getName.endsWith(extension)).toSet
+  private def getFilesWithExtension(root: File, extensions: Set[String]): Set[File] = {
+      allFiles(root).filter(
+        f => extensions.exists(extension => f.getName.endsWith(extension))).toSet
   }
 }
