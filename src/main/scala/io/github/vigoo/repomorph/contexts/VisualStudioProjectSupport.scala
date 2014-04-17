@@ -9,7 +9,7 @@ trait VisualStudioProjectSupport {
 
   def filesInVisualStudioSolution(solution: File, inverted: Boolean): Set[File] = {
 
-    val pattern = "^Project\\(\\\".+\\\"\\)\\s=\\s\\\"([^\"]+\\\\.csproj)\\\",".r
+    val pattern = """^Project\(\".+\"\)\s=\s\"[^\"]+\",\s\"([^\"]+\.csproj)\",""".r
 
     managed(self.read(solution)) acquireAndGet {
       source =>
@@ -28,14 +28,14 @@ trait VisualStudioProjectSupport {
 
   def filesInVisualCSharpProject(projectPath: File, inverted: Boolean): Set[File] = {
 
-    val pattern = "\\<(Compile|Page)\\sInclude=\\\"([^\"]+)\\\"\\s\\/\\>".r
+    val pattern = """<(Compile|Page)\sInclude=\"([^\"]+)\"""".r
 
     managed(self.read(projectPath)) acquireAndGet {
       source =>
         val sourceFiles = source.getLines
           .map(line => pattern findFirstIn line)
           .collect {
-             case Some(pattern(filePath)) => new File(projectPath.getParent, filePath) }
+             case Some(pattern(_, filePath)) => new File(projectPath.getParent, filePath) }
           .toSet
 
         if (inverted) {
