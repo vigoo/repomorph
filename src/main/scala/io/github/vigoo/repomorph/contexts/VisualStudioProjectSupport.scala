@@ -28,7 +28,7 @@ trait VisualStudioProjectSupport {
 
   def filesInVisualCSharpProject(projectPath: File, inverted: Boolean): Set[File] = {
 
-    val pattern = """<(Compile|Page)\sInclude=\"([^\"]+)\"""".r
+    val pattern = """<(Compile|Page|ApplicationDefinition)\sInclude=\"([^\"]+)\"""".r
 
     managed(self.read(projectPath)) acquireAndGet {
       source =>
