@@ -2,7 +2,7 @@ package io.github.vigoo.repomorph.api
 
 import java.io.File
 import io.github.vigoo.repomorph.{FilesInProject, SingleDirectory, FilePattern}
-import io.github.vigoo.repomorph.actions.{FileAction, RemoveLinesAction}
+import io.github.vigoo.repomorph.actions.{ReplaceStringAction, FileAction, RemoveLinesAction}
 import io.github.vigoo.repomorph.contexts.MorphContext
 
 object ScriptAPI {
@@ -33,6 +33,8 @@ object ScriptAPI {
   }
 
   def removeLines(lineFilter: String => Boolean): FileAction = new RemoveLinesAction(lineFilter)
+
+  def replace(in: String, out: String): FileAction = new ReplaceStringAction(in, out)
 
   def containedBy(projectPath: String) : FilesInProject = FilesInProject(projectPath, false)
 }

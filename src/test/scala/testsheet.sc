@@ -7,6 +7,12 @@ delete { files.not(containedBy("SmartCore\\SmartCore.sln")) }
 foreach { file called "AssemblyInfo.cs" } {
   removeLines(line => line.startsWith("[assembly: AssemblyVersion(") ||
                       line.startsWith("[assembly: AssemblyFileVersion(")) }
+
+foreach { file("x") } {
+  replace("a", "b") and
+  replace("c", "d")
+}
+
 move { "SmartCore\\General" } to "SmartCore\\SmartCore.General\\cs"
 
 delete { directory called "SmartCore\\SmartCore.General\\cs\\PointStorage"}
