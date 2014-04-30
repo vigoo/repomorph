@@ -2,6 +2,8 @@ name := "repomorph"
 
 version := "1.0"
 
+seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
+
 libraryDependencies += "com.googlecode.scalascriptengine" % "scalascriptengine" % "1.3.6-2.10.3"
 
 libraryDependencies += "org.scala-lang" % "scala-compiler" % "2.10.3"
