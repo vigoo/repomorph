@@ -5,7 +5,7 @@ import com.aragost.javahg.{RepositoryConfiguration, Repository}
 import java.nio.charset.CodingErrorAction
 import com.aragost.javahg.commands.{RemoveCommand, RenameCommand}
 
-class MercurialMorphContext(private val rootPath: File) extends FileSystemMorphContext(rootPath) {
+class MercurialMorphContext(rootPath: File) extends FileSystemMorphContext(rootPath) {
 
   private val repositoryConfig = new RepositoryConfiguration {
     setCodingErrorAction(CodingErrorAction.REPLACE)

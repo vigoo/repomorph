@@ -5,7 +5,7 @@ import java.io.File
 import scala.io.Source
 
 object TestMorphContext extends MorphContext {
-  override def getFiles(pattern: FilePattern): Iterable[File] = {
+  override def getFiles(pattern: FilePattern): Seq[File] = {
     List[File]()
   }
 
@@ -30,7 +30,7 @@ object TestMorphContext extends MorphContext {
     println(s"Deleting ${path}")
   }
 
-  override def allFiles(root: File): Iterable[File] = {
+  override def allFiles(root: File): Seq[File] = {
     List[File]()
   }
 }

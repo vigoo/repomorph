@@ -1,13 +1,11 @@
 package io.github.vigoo.repomorph
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
-import org.scalamock.scalatest.MockFactory
 import io.github.vigoo.repomorph.contexts.MorphContext
+import org.scalamock.scalatest.MockFactory
 
-
-class RepomorphScriptSpec extends FlatSpec with MockFactory with ShouldMatchers {
+class RepomorphScriptSpec extends FlatSpec with MockFactory with Matchers {
 
   "RepomorphScript" should "accept empty scripts" in {
 

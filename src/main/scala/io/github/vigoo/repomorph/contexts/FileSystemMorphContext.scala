@@ -10,7 +10,7 @@ import io.github.vigoo.repomorph.SingleFile
 import io.github.vigoo.repomorph.SingleDirectory
 import java.util.UUID
 
-class FileSystemMorphContext(private val rootPath: File) extends MorphContext with ProjectFileSupport {
+class FileSystemMorphContext(val rootPath: File) extends MorphContext with ProjectFileSupport {
   override def overwrite(file: File, newContents: String): Unit = {
     println(s"Overwriting $file")
     for (writer <- managed(new FileWriter(file))) {
@@ -36,14 +36,14 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext wi
     else
       Source.fromFile(file, "UTF-8")
 
-  override def getFiles(pattern: FilePattern): Iterable[File] =
+  override def getFiles(pattern: FilePattern): Seq[File] =
     pattern match {
       case SingleFile(path) => List(new File(rootPath, path))
       case SingleDirectory(path) => safe(new File(rootPath, path).listFiles)
       case FilesWithExtension(extension) => for (file <- allFiles() if file.getName endsWith extension) yield file
       case FilesInDirectory(path, filter) => for (file <- safe(new File(rootPath, path).listFiles) if file.isFile && filter(file.getName)) yield file
       case FileByName(name) => for (file <- allFiles() if file.getName == name) yield file
-      case FilesInProject(projectPath, inverted) => filesInProject(new File(rootPath, projectPath), inverted)
+      case FilesInProject(projectPath, inverted) => filesInProject(new File(rootPath, projectPath), inverted).toSeq
     }
 
   override def move(source: File, target: File): Unit = {
@@ -91,12 +91,12 @@ class FileSystemMorphContext(private val rootPath: File) extends MorphContext wi
     }
   }
 
-  override def allFiles(root: File): Iterable[File] = {
+  override def allFiles(root: File): Seq[File] = {
     safe(root.listFiles).filter(_.isFile) ++ safe(root.listFiles).filter(_.isDirectory).flatMap(allFiles)
   }
 
-  private def allFiles(): Iterable[File] = allFiles(rootPath)
+  private def allFiles(): Seq[File] = allFiles(rootPath)
 
-  private def safe(s: Iterable[File]): Iterable[File] = if (s == null) List() else s
+  private def safe(s: Seq[File]): Seq[File] = if (s == null) List() else s
 
 }
