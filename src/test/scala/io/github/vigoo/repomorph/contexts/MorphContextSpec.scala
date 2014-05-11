@@ -6,7 +6,7 @@ import org.scalatest.Matchers._
 import java.nio.file.Files
 import org.apache.commons.io.FileUtils
 import com.aragost.javahg.Repository
-import io.github.vigoo.repomorph.FilesInDirectory
+import io.github.vigoo.repomorph.{WholeRepository, FilesInDirectory}
 import java.io.File
 import com.aragost.javahg.commands.{CommitCommand, AddCommand}
 import org.scalatest.matchers.Matcher
@@ -15,6 +15,9 @@ abstract class MorphContextSpec[TContext <: MorphContext](implName: String) exte
 
   def haveFileName(name: String): Matcher[File] =
      be(name) compose { (f: File) => f.getName }
+
+  def havePathEndingWith(postfix: String): Matcher[File] =
+    endWith(postfix) compose { (f: File) => f.getAbsolutePath }
 
   implName should "get the list of all files" in {
 
@@ -68,7 +71,17 @@ abstract class MorphContextSpec[TContext <: MorphContext](implName: String) exte
 
       context.move(new File("d"), new File("target/inner"))
 
-      ???
+      val resultFiles = context.getFiles(WholeRepository)
+
+      resultFiles should have length (3)
+      exactly(1, resultFiles) should havePathEndingWith("target/inner/a")
+      exactly(1, resultFiles) should havePathEndingWith("target/inner/d2/b")
+      exactly(1, resultFiles) should havePathEndingWith("c")
+
+      directoryExists("target") should be (true)
+      directoryExists("target/inner") should be (true)
+      directoryExists("target/inner/d2") should be (true)
+      directoryExists("d") should be (false)
     }
   }
 

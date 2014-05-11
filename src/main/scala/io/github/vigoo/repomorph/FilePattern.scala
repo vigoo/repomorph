@@ -1,6 +1,6 @@
 package io.github.vigoo.repomorph
 
-abstract class FilePattern
+sealed trait FilePattern
 
 case class SingleFile(path: String) extends FilePattern {}
 case class SingleDirectory(path: String) extends FilePattern
@@ -11,3 +11,4 @@ case class FilesInDirectory(path: String, filter: String=>Boolean) extends FileP
 }
 case class FileByName(name: String) extends  FilePattern
 case class FilesInProject(projectPath: String, inverted: Boolean) extends FilePattern
+case object WholeRepository extends FilePattern

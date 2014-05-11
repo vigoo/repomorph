@@ -48,4 +48,6 @@ class MercurialMorphContext(rootPath: File) extends FileSystemMorphContext(rootP
       case e: Throwable => println(s"Rename failed: $e")
     }
   }
+
+  override def includeDirectory(dir: File): Boolean = dir.getName != ".hg"
 }

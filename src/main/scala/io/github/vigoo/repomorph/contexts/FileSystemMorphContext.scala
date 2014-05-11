@@ -44,6 +44,7 @@ class FileSystemMorphContext(val rootPath: File) extends MorphContext with Proje
       case FilesInDirectory(path, filter) => for (file <- safe(new File(rootPath, path).listFiles) if file.isFile && filter(file.getName)) yield file
       case FileByName(name) => for (file <- allFiles() if file.getName == name) yield file
       case FilesInProject(projectPath, inverted) => filesInProject(new File(rootPath, projectPath), inverted).toSeq
+      case WholeRepository => allFiles()
     }
 
   override def move(source: File, target: File): Unit = {
@@ -92,8 +93,11 @@ class FileSystemMorphContext(val rootPath: File) extends MorphContext with Proje
   }
 
   override def allFiles(root: File): Seq[File] = {
-    safe(root.listFiles).filter(_.isFile) ++ safe(root.listFiles).filter(_.isDirectory).flatMap(allFiles)
+    safe(root.listFiles).filter(_.isFile).filter(includeFile) ++ safe(root.listFiles).filter(_.isDirectory).filter(includeDirectory).flatMap(allFiles)
   }
+
+  def includeFile(file: File): Boolean = true
+  def includeDirectory(dir: File): Boolean = true
 
   private def allFiles(): Seq[File] = allFiles(rootPath)
 
