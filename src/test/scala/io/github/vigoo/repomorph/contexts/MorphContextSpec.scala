@@ -6,7 +6,7 @@ import org.scalatest.Matchers._
 import java.nio.file.Files
 import org.apache.commons.io.FileUtils
 import com.aragost.javahg.Repository
-import io.github.vigoo.repomorph.{WholeRepository, FilesInDirectory}
+import io.github.vigoo.repomorph.{FileByName, WholeRepository, FilesInDirectory}
 import java.io.File
 import com.aragost.javahg.commands.{CommitCommand, AddCommand}
 import org.scalatest.matchers.Matcher
@@ -82,6 +82,85 @@ abstract class MorphContextSpec[TContext <: MorphContext](implName: String) exte
       directoryExists("target/inner") should be (true)
       directoryExists("target/inner/d2") should be (true)
       directoryExists("d") should be (false)
+    }
+  }
+
+  it should "be able to delete a single file" in {
+    withTestContext { implicit context =>
+
+      directory("d")
+      file("d/a")
+
+      context.delete("d/a")
+
+      val resultFiles = context.getFiles(WholeRepository)
+
+      resultFiles should have length(0)
+    }
+  }
+
+  it should "be able to list files in a directory with exceptions" in {
+    withTestContext { implicit context =>
+      directory("d")
+      directory("d2")
+      files("d/a", "d/b", "d/c", "d2/x")
+
+      val resultFiles = context.getFiles(FilesInDirectory("d", _ => true).except("a"))
+
+      resultFiles should have length(2)
+
+      exactly (1, resultFiles) should haveFileName("b")
+      exactly (1, resultFiles) should haveFileName("c")
+    }
+  }
+
+  it should "be able to find all files with a given name" in {
+    withTestContext { implicit context =>
+      directory("d")
+      directory("d/d2")
+      directory("d3")
+
+      files("d/a", "d/b", "d/d2/a", "d/d2/c", "d3/a", "d3/x")
+
+      val resultFiles = context.getFiles(FileByName("a"))
+
+      resultFiles should have length(3)
+
+      exactly (1, resultFiles) should havePathEndingWith("d/a")
+      exactly (1, resultFiles) should havePathEndingWith("d/d2/a")
+      exactly (1, resultFiles) should havePathEndingWith("d3/a")
+    }
+  }
+
+  it should "be able to move a file to an existing directory" in {
+    withTestContext { implicit context =>
+      directory("d")
+      directory("d2")
+
+      file("d/a")
+
+      context.move(new File("d/a"), new File("d2"))
+
+      val resultFiles = context.getFiles(WholeRepository)
+
+      resultFiles should have length(1)
+
+      exactly (1, resultFiles) should havePathEndingWith("d2/a")
+    }
+  }
+
+  it should "be able to move and rename a file to a new directory" in {
+    withTestContext { implicit context =>
+      directory("d")
+      file("d/a")
+
+      context.move(new File("d/a"), new File("d2/b"))
+
+      val resultFiles = context.getFiles(WholeRepository)
+
+      resultFiles should have length(1)
+
+      exactly (1, resultFiles) should havePathEndingWith("d2/b")
     }
   }
 
